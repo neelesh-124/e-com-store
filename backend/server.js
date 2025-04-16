@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 // routes
 import authRoutes from "./routes/auth.route.js";
 import productRoutes from "./routes/product.route.js";
+import cartRoutes from "./routes/cart.route.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -18,6 +19,7 @@ app.use(cookieParser()); // allows us to read request cookies
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 app.listen(PORT, () => {
   console.log(`Sever running on port ${PORT}`);
