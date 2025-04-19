@@ -65,9 +65,7 @@ export const updateQuantity = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in updateQuantity controller", error.message);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -79,9 +77,7 @@ export const getCartProducts = async (req, res) => {
 
     // add quantity for each products
     const cartItems = products.map((product) => {
-      const item = req.user.cartItems.find(
-        (cartItem) => cartItem.id == product.id
-      );
+      const item = req.user.cartItems.find((cartItem) => cartItem.id == product.id);
 
       return { ...product.toJSON(), quantity: item.quantity };
     });
@@ -89,8 +85,6 @@ export const getCartProducts = async (req, res) => {
     return res.json(cartItems);
   } catch (error) {
     console.log("Error in getCartProducts controller", error.message);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };

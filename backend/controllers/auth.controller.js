@@ -17,12 +17,7 @@ const generateTokens = (userId) => {
 
 const storeRefreshToken = async (userId, refreshToken) => {
   // saving refresh token to redis DB
-  await redis.set(
-    `refresh_token: ${userId}`,
-    refreshToken,
-    "EX",
-    7 * 24 * 60 * 60
-  ); // 7 days expiry
+  await redis.set(`refresh_token: ${userId}`, refreshToken, "EX", 7 * 24 * 60 * 60); // 7 days expiry
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
@@ -92,7 +87,7 @@ export const login = async (req, res) => {
         role: user.role,
       });
     } else {
-      res.status(401).json({ messsage: "Invalid email or password!" });
+      res.status(401).json({ message: "Invalid email or password!" });
     }
   } catch (error) {
     console.log("Error in login controller", error.message);
@@ -106,10 +101,7 @@ export const logout = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
-      const decoded = jwt.verify(
-        refreshToken,
-        process.env.REFRESH_TOKEN_SECRET
-      );
+      const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
       await redis.del(`refresh_token: ${decoded.userId}`);
     }
     res.clearCookie("accessToken");
@@ -131,21 +123,15 @@ export const refreshToken = async (req, res) => {
     }
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const storedRefreshToken = await redis.get(
-      `refresh_token: ${decoded.userId}`
-    );
+    const storedRefreshToken = await redis.get(`refresh_token: ${decoded.userId}`);
 
     if (storedRefreshToken !== refreshToken) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
 
-    const accessToken = jwt.sign(
-      { userId: decoded.userId },
-      process.env.ACCESS_TOKEN_SECRET,
-      {
-        expiresIn: "15m",
-      }
-    );
+    const accessToken = jwt.sign({ userId: decoded.userId }, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "15m",
+    });
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -157,6 +143,14 @@ export const refreshToken = async (req, res) => {
     res.json({ message: "Token refreshed successfully" });
   } catch (error) {
     console.log("Error in refreshToken controller", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    res.json(req.user);
+  } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
