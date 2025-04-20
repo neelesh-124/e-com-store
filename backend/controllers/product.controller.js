@@ -45,7 +45,7 @@ export const createProduct = async (req, res) => {
     let cloudinaryResponse = null;
 
     if (image) {
-      const cloudinaryResponse = await cloudinary.uploader.upload(image, {
+      cloudinaryResponse = await cloudinary.uploader.upload(image, {
         folder: "products",
       });
     }
@@ -54,7 +54,9 @@ export const createProduct = async (req, res) => {
       name,
       description,
       price,
-      image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : "",
+      image: cloudinaryResponse?.secure_url
+        ? cloudinaryResponse.secure_url
+        : "",
       category,
     });
 

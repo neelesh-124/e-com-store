@@ -43,7 +43,9 @@ export const createCheckoutSession = async (req, res) => {
 
       // apply the coupon discount
       if (coupon) {
-        totalAmount -= Math.round((totalAmount * coupon.discountPercentage) / 100);
+        totalAmount -= Math.round(
+          (totalAmount * coupon.discountPercentage) / 100
+        );
       }
     }
 
@@ -53,7 +55,9 @@ export const createCheckoutSession = async (req, res) => {
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
-      discounts: coupon ? [{ coupon: await createStripeCoupon(coupon.discountPercentage) }] : [],
+      discounts: coupon
+        ? [{ coupon: await createStripeCoupon(coupon.discountPercentage) }]
+        : [],
       metadata: {
         userId: req.user._id.toString(),
         couponCode: couponCode || "",
@@ -116,7 +120,8 @@ export const checkoutSuccess = async (req, res) => {
 
       res.status(200).json({
         success: true,
-        message: "Payment successful, order created, and coupon deactivated if used!",
+        message:
+          "Payment successful, order created, and coupon deactivated if used!",
         orderId: newOrder._id,
       });
     }
